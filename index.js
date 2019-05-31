@@ -1,23 +1,22 @@
-function serilizeURL (url) {
+function serilizeURL(url) {
     var rs = "";
-    try{
+    try {
         rs = url.split("?")[1];
-    }catch (err){
+    } catch (err) {
 
     }
     var arr = [];
     try {
-        arr =rs.split("&")
-    }catch (err){
+        arr = rs.split("&")
+    } catch (err) {
 
     }
-    var param={};
-    for(var i=0;i<arr.length;i++){
-        if(arr[i].indexOf("=")!=-1){
-            param[arr[i].split("=")[0]]=arr[i].split("=")[1];
-        }
-        else{
-            param[arr[i]]="undefined";
+    var param = {};
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i].indexOf("=") != -1) {
+            param[arr[i].split("=")[0]] = arr[i].split("=")[1];
+        } else {
+            param[arr[i]] = "undefined";
         }
     }
     return param
@@ -25,22 +24,22 @@ function serilizeURL (url) {
 var vConsole = new VConsole();
 var params = serilizeURL(location.search)
 var url = params.pdfUrl;
-console.log("url  :"+url)
+console.log("url  :" + url)
 PDFJS.cMapUrl = 'https://unpkg.com/pdfjs-dist@1.9.426/cmaps/';
 PDFJS.cMapPacked = true;
 var u = navigator.userAgent;
 var isChromeWithRangeBug = /Chrome\/(39|40)\./.test(navigator.userAgent);
 var isIPhone = /iPhone/.test(navigator.userAgent);
 var isIPad = /iPad/.test(navigator.userAgent);
-var isSafari = u.indexOf('Safari')  >  -1;
-if (isSafari  || isChromeWithRangeBug) {
-    if (isSafari  || isChromeWithRangeBug || isIPhone || isIPad) {
+var isSafari = u.indexOf('Safari') > -1;
+if (isSafari || isChromeWithRangeBug) {
+    if (isSafari || isChromeWithRangeBug || isIPhone || isIPad) {
         PDFJS.disableRange = true;
         PDFJS.disableStream = true;
     }
 }
 var pdfDoc = null;
-var loadPageNum = 0;//已经加载页码
+var loadPageNum = 0; //已经加载页码
 function createPage(num) {
     var div = document.createElement("div");
     var canvas = document.createElement("canvas");
@@ -67,22 +66,25 @@ function renderPage(num) {
             viewport: viewport
         }).promise.then(function () {
             loadPageNum++;
-            if(pdfDoc.numPages === loadPageNum) console.log("加载完成")
+            if (pdfDoc.numPages === loadPageNum) console.log("加载完成")
             console.log(loadPageNum)
 
         });
     });
 }
 try {
-    PDFJS.getDocument({url:url,rangeChunkSize:65536*2}).then(function (pdf) {
+    PDFJS.getDocument({
+        url: url,
+        rangeChunkSize: 65536 * 2
+    }).then(function (pdf) {
         pdfDoc = pdf;
         console.log(pdfDoc)
-        document.getElementById("notice").innerText =url+ "共"+pdfDoc.numPages+"页";
+        document.getElementById("notice").innerText = url + "共" + pdfDoc.numPages + "页";
         for (var i = 1; i <= pdfDoc.numPages; i++) {
             renderPage(i)
         }
     });
-}catch (err){
-    console.log(url+"解析失败"+err)
+} catch (err) {
+    console.log(url + "解析失败" + err)
 
 }
